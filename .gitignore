@@ -1,0 +1,86 @@
+# ─────────────────────────────────────────────
+# 민감 정보 — 절대 커밋 금지
+# ─────────────────────────────────────────────
+
+# 환경변수
+.env
+.env.*
+!.env.example
+!.env.local.example
+
+# 스프링 로컬 오버라이드 (실제 값을 적어두는 파일)
+# application.yml 자체는 환경변수 참조만 담으므로 추적한다.
+application-local.yml
+application-local.yaml
+application-local.properties
+application-secret.yml
+application-secret.yaml
+application-secret.properties
+
+# 인증서 · 키
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.truststore
+id_rsa*
+id_ed25519*
+
+# 자격증명 파일
+credentials
+credentials.json
+service-account*.json
+google-services.json
+*-credentials.json
+secrets.json
+secrets.yml
+.netrc
+.npmrc
+.aws/
+.gcloud/
+
+# DB 덤프 · 백업 (고객 문의 등 개인정보 포함)
+*.sql
+*.dump
+*.bak
+backup/
+backups/
+
+# 업로드 파일 (시공 사진 등)
+uploads/
+
+# 로그 (DEBUG 레벨이라 개인정보가 찍힐 수 있음)
+*.log
+logs/
+
+# ─────────────────────────────────────────────
+# 빌드 산출물 · 캐시
+# ─────────────────────────────────────────────
+build/
+out/
+target/
+.gradle/
+bin/
+
+node_modules/
+.next/
+*.tsbuildinfo
+next-env.d.ts
+
+# ─────────────────────────────────────────────
+# 도구 · IDE · OS
+# ─────────────────────────────────────────────
+.idea/
+*.iml
+*.iws
+.vscode/
+.codex/
+.claude/
+
+.DS_Store
+Thumbs.db
+
+# 프론트 참고용으로 로컬에만 둔다 (루트 규칙이 같은 범위를 커버)
+frontend/.gitignore

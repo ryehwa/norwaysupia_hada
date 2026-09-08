@@ -1,0 +1,23 @@
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #ffffff;
+  color: #1a1a18;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+::selection { background: #1a1a18; color: #fff; }
+
+a { color: #1a1a18; text-decoration: none; }
+a:hover { color: #5c584f; }
+
+input, textarea, select, button { font-family: 'Noto Sans KR', sans-serif; }
+input:focus, textarea:focus, select:focus { outline: none; border-color: #1a1a18; }
+
+button { border: none; background: none; cursor: pointer; color: inherit; }
+
+/* 스크롤바가 얇은 가로 목록 (날짜 선택 등) */
+.thin-scroll::-webkit-scrollbar { height: 6px; }
+.thin-scroll::-webkit-scrollbar-thumb { background: #d8d3c9; }

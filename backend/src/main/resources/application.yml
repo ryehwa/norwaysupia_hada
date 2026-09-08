@@ -1,0 +1,50 @@
+# 모든 설정값은 환경변수로 주입한다. 기본값을 두지 않으므로
+# 미설정 시 기동이 실패한다. 로컬 값은 backend/.env 참고.
+spring:
+  application:
+    name: hadasupia
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate.format_sql: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 60MB
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
+server:
+  port: 8080
+
+app:
+  frontend-origin: ${FRONTEND_ORIGIN}
+  upload-dir: ${UPLOAD_DIR}
+  admin:
+    username: ${ADMIN_USERNAME}
+    password: ${ADMIN_PASSWORD}
+  mail:
+    to: ${MAIL_TO}
+    enabled: ${MAIL_ENABLED}
+  consult:
+    open-time: "11:00"
+    close-time: "20:30"
+    step-minutes: 30
+    duration-minutes: 60
+    bookable-days: 30
+
+logging:
+  level:
+    com.hadasupia: DEBUG
