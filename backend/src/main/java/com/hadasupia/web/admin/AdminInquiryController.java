@@ -1,4 +1,4 @@
-package com.hadasupia.web;
+package com.hadasupia.web.admin;
 
 import com.hadasupia.dto.CommonDtos.DashboardView;
 import com.hadasupia.dto.InquiryDtos.InquiryDetail;

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { publicApi } from '@/lib/api';
+import { publicApi } from '@/lib/api/public';
 import { theme } from '@/lib/theme';
 import { ampm } from '@/lib/format';
 

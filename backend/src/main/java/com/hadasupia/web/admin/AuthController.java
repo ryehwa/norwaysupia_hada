@@ -1,4 +1,4 @@
-package com.hadasupia.web;
+package com.hadasupia.web.admin;
 
 import com.hadasupia.dto.CommonDtos.LoginRequest;
 import com.hadasupia.dto.CommonDtos.MeResponse;

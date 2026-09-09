@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { theme } from '@/lib/theme';
-import type { ProjectSummary } from '@/lib/api';
+import type { ProjectSummary } from '@/lib/api/public';
 
 /** 시공사례 카드 — 썸네일이 없으면 IMAGE 플레이스홀더 */
 export default function ProjectCard({

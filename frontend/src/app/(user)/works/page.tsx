@@ -1,11 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { publicApi, type PageResponse, type ProjectSummary } from '@/lib/api';
+import { publicApi, type PageResponse, type ProjectSummary } from '@/lib/api/public';
 import { theme } from '@/lib/theme';
-import PageHeading from '@/components/PageHeading';
-import ProjectCard from '@/components/ProjectCard';
-import Pagination from '@/components/Pagination';
+import PageHeading from '@/components/user/PageHeading';
+import ProjectCard from '@/components/user/ProjectCard';
+import Pagination from '@/components/shared/Pagination';
 
 const CATEGORIES = ['전체', '주거', '상업'] as const;
 const PAGE_SIZE = 9; // 3 × 3

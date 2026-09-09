@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { publicApi } from '@/lib/api';
+import { publicApi } from '@/lib/api/public';
 import { theme } from '@/lib/theme';
 
 export const revalidate = 60;

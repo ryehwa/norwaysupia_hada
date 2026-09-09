@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { theme } from '@/lib/theme';
-import PageHeading from '@/components/PageHeading';
+import PageHeading from '@/components/user/PageHeading';
 
 const ADDRESS = '서울특별시 동작구 사당로16가길 106';
 const NAVER_CLIENT_ID = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID;

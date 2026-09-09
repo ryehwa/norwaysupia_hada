@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import { publicApi, type FeaturedSlotView } from '@/lib/api';
+import { publicApi, type FeaturedSlotView } from '@/lib/api/public';
 import { theme } from '@/lib/theme';
-import ProjectCard from '@/components/ProjectCard';
+import ProjectCard from '@/components/user/ProjectCard';
 
 export const revalidate = 60;
 

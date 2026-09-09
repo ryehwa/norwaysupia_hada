@@ -21,3 +21,8 @@ button { border: none; background: none; cursor: pointer; color: inherit; }
 /* 스크롤바가 얇은 가로 목록 (날짜 선택 등) */
 .thin-scroll::-webkit-scrollbar { height: 6px; }
 .thin-scroll::-webkit-scrollbar-thumb { background: #d8d3c9; }
+
+/* 관리자 — HOME 3칸 카드에 마우스를 올리면 삭제 오버레이가 뜬다 */
+.admin-home-card:hover .admin-home-overlay {
+  opacity: 1;
+}

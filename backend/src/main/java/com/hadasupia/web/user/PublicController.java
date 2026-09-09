@@ -1,4 +1,4 @@
-package com.hadasupia.web;
+package com.hadasupia.web.user;
 
 import com.hadasupia.dto.CommonDtos.FeaturedSlotView;
 import com.hadasupia.dto.CommonDtos.SiteInfoView;

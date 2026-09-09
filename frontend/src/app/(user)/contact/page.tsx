@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { ApiError, publicApi } from '@/lib/api';
+import { ApiError, publicApi } from '@/lib/api/public';
 import { theme } from '@/lib/theme';
-import PageHeading from '@/components/PageHeading';
-import AddressSearch from '@/components/AddressSearch';
-import DateTimePicker from '@/components/DateTimePicker';
+import PageHeading from '@/components/user/PageHeading';
+import AddressSearch from '@/components/user/AddressSearch';
+import DateTimePicker from '@/components/user/DateTimePicker';
 import { ampm, shortDate } from '@/lib/format';
 
 const SPACE_TYPES = ['주거', '상업'] as const;

@@ -1,8 +1,5 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import SiteHeader from '@/components/SiteHeader';
-import SiteFooter from '@/components/SiteFooter';
-import FloatingContact from '@/components/FloatingContact';
 import { fontLink } from '@/lib/theme';
 
 export const metadata: Metadata = {
@@ -16,6 +13,7 @@ export const metadata: Metadata = {
   },
 };
 
+/** 유저 사이트와 관리자 콘솔이 공유하는 최소 골격. 헤더·푸터는 (site) 쪽에만 붙는다. */
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko">
@@ -24,12 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href={fontLink} rel="stylesheet" />
       </head>
-      <body>
-        <SiteHeader />
-        <main>{children}</main>
-        <SiteFooter />
-        <FloatingContact />
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
