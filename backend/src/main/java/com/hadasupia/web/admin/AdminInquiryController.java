@@ -28,6 +28,7 @@ public class AdminInquiryController {
                 projectService.count(),
                 inquiryService.countPending(),
                 inquiryService.countAll(),
+                inquiryService.countUnnotified(),
                 inquiryService.recent(4)
         );
     }

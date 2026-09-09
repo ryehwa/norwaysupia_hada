@@ -2,6 +2,7 @@ package com.hadasupia.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -10,6 +11,7 @@ import java.nio.file.Paths;
 /** 업로드된 사진을 /uploads/** 로 서빙한다. */
 @Configuration
 @EnableAsync
+@EnableScheduling
 public class WebConfig implements WebMvcConfigurer {
 
     private final AppProperties props;

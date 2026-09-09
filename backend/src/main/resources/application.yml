@@ -25,6 +25,10 @@ spring:
     properties:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
+      # 값이 없으면 무한 대기라 비동기 스레드가 물린다. 정상 발송은 1초 안에 끝난다.
+      mail.smtp.connectiontimeout: 5000
+      mail.smtp.timeout: 10000
+      mail.smtp.writetimeout: 10000
 
 server:
   port: 8080
@@ -38,6 +42,8 @@ app:
   mail:
     to: ${MAIL_TO}
     enabled: ${MAIL_ENABLED}
+    # 발송에 실패한 알림을 다시 시도하는 주기
+    retry-interval-ms: 300000
   consult:
     open-time: "11:00"
     close-time: "20:30"

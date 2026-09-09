@@ -25,10 +25,14 @@ public class AppProperties {
     public static class Mail {
         private String to = "";
         private boolean enabled = true;
+        /** 미발송 알림을 다시 시도하는 주기 */
+        private long retryIntervalMs = 300_000;
         public String getTo() { return to; }
         public void setTo(String v) { this.to = v; }
         public boolean isEnabled() { return enabled; }
         public void setEnabled(boolean v) { this.enabled = v; }
+        public long getRetryIntervalMs() { return retryIntervalMs; }
+        public void setRetryIntervalMs(long v) { this.retryIntervalMs = v; }
     }
 
     /** 상담 예약 시간대 규칙: 30분 단위로 열리고, 예약 1건은 60분(2칸)을 차지한다. */

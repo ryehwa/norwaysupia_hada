@@ -41,14 +41,17 @@ public final class InquiryDtos {
             Instant submittedAt,
             String status,
             boolean reserved,
-            boolean confirmed
+            boolean confirmed,
+            boolean notified,
+            String notifyError
     ) {
         public static InquiryRow of(Inquiry q) {
             return new InquiryRow(
                     q.getId(), q.getName(), q.getPhone(), q.getAddress(),
                     q.getSpaceType().getLabel(), q.getConsultDate(), q.getConsultTime(),
                     q.getSubmittedAt(), q.getStatus().getLabel(),
-                    q.isReserved(), q.isConfirmed()
+                    q.isReserved(), q.isConfirmed(),
+                    q.getNotifiedAt() != null, q.getNotifyError()
             );
         }
     }
@@ -71,7 +74,11 @@ public final class InquiryDtos {
             boolean reserved,
             boolean confirmed,
             String note,
-            String status
+            String status,
+            boolean notified,
+            Instant notifiedAt,
+            String notifyError,
+            int notifyTries
     ) {
         public static InquiryDetail of(Inquiry q, LocalTime endTime) {
             return new InquiryDetail(
@@ -79,7 +86,8 @@ public final class InquiryDtos {
                     q.getAddress(), q.getAddressDetail(), q.getSpaceType().getLabel(),
                     q.getSize(), q.getSizeUnit(), q.getWorkDate(),
                     q.getConsultDate(), q.getConsultTime(), endTime,
-                    q.isReserved(), q.isConfirmed(), q.getNote(), q.getStatus().getLabel()
+                    q.isReserved(), q.isConfirmed(), q.getNote(), q.getStatus().getLabel(),
+                    q.getNotifiedAt() != null, q.getNotifiedAt(), q.getNotifyError(), q.getNotifyTries()
             );
         }
     }

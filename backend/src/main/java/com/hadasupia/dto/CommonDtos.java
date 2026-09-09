@@ -43,5 +43,6 @@ public final class CommonDtos {
     public record FeaturedSaveRequest(List<Long> projectIds) {}
 
     public record DashboardView(long projectCount, long pendingCount, long totalInquiryCount,
+                                long unnotifiedCount,
                                 List<InquiryDtos.InquiryRow> recentInquiries) {}
 }

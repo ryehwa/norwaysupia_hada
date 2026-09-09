@@ -9,7 +9,10 @@ import java.time.LocalTime;
 @Entity
 @Table(name = "inquiries", indexes = {
         @Index(name = "idx_inquiry_status", columnList = "status"),
-        @Index(name = "idx_inquiry_consult", columnList = "consultDate, consultTime")
+        @Index(name = "idx_inquiry_consult", columnList = "consultDate, consultTime"),
+        @Index(name = "idx_inquiry_submitted", columnList = "submittedAt"),
+        // 스케줄러가 미발송 건만 골라내는 조건
+        @Index(name = "idx_inquiry_notify", columnList = "notifiedAt")
 })
 public class Inquiry {
 
@@ -67,6 +70,17 @@ public class Inquiry {
     @Column(nullable = false)
     private Instant submittedAt = Instant.now();
 
+    /** 알림 메일 발송 완료 시각. null 이면 아직 못 보낸 건이다. */
+    private Instant notifiedAt;
+
+    /** 마지막 발송 실패 사유 (SMTP 응답 코드 포함) */
+    @Column(length = 300)
+    private String notifyError;
+
+    /** 발송 시도 횟수. 일정 횟수를 넘기면 스케줄러가 더 시도하지 않는다. */
+    @Column(nullable = false)
+    private int notifyTries;
+
     public Long getId() { return id; }
     public void setId(Long v) { this.id = v; }
     public String getName() { return name; }
@@ -99,4 +113,10 @@ public class Inquiry {
     public void setStatus(InquiryStatus v) { this.status = v; }
     public Instant getSubmittedAt() { return submittedAt; }
     public void setSubmittedAt(Instant v) { this.submittedAt = v; }
+    public Instant getNotifiedAt() { return notifiedAt; }
+    public void setNotifiedAt(Instant v) { this.notifiedAt = v; }
+    public String getNotifyError() { return notifyError; }
+    public void setNotifyError(String v) { this.notifyError = v; }
+    public int getNotifyTries() { return notifyTries; }
+    public void setNotifyTries(int v) { this.notifyTries = v; }
 }

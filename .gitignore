@@ -43,6 +43,8 @@ secrets.yml
 
 # DB 덤프 · 백업 (고객 문의 등 개인정보 포함)
 *.sql
+# 단, 손으로 쓴 마이그레이션 스크립트는 저장소에 둔다 (데이터가 아니라 코드다)
+!backend/db/*.sql
 *.dump
 *.bak
 backup/

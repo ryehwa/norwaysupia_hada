@@ -126,7 +126,25 @@ function InquiryTable({
           </div>
           {rows.map((q) => (
             <div key={q.id} onClick={() => onOpen(q.id)} style={row}>
-              <span>{q.name}</span>
+              <span>
+                {q.name}
+                {!q.notified && (
+                  <span
+                    title={q.notifyError ?? '알림이 아직 발송되지 않았습니다'}
+                    style={{
+                      marginLeft: 6,
+                      fontFamily: theme.font.sansKr,
+                      fontSize: 11,
+                      color: theme.color.danger,
+                      border: `1px solid #e8d3cd`,
+                      background: '#f7ece9',
+                      padding: '1px 6px',
+                    }}
+                  >
+                    알림 실패
+                  </span>
+                )}
+              </span>
               <span>{phoneLabel(q.phone)}</span>
               <span style={{ color: theme.color.muted }}>{q.address}</span>
               <span>{q.spaceType}</span>
@@ -328,6 +346,28 @@ function Detail({
 
           <div style={key}>비고</div>
           <div style={{ whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>{detail.note || '-'}</div>
+
+          <div style={key}>알림 메일</div>
+          <div>
+            {detail.notified ? (
+              <span style={{ color: theme.color.doneFg }}>
+                발송 완료 · {detail.notifiedAt ? stamp(detail.notifiedAt) : ''}
+              </span>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <span style={{ color: theme.color.danger }}>
+                  미발송 {detail.notifyTries > 0 && `(${detail.notifyTries}회 시도)`}
+                </span>
+                {detail.notifyError && (
+                  <span
+                    style={{ fontSize: 12, color: theme.color.muted, wordBreak: 'break-all' }}
+                  >
+                    {detail.notifyError}
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </>

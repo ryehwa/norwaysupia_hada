@@ -7,10 +7,12 @@ import com.hadasupia.dto.InquiryDtos.*;
 import com.hadasupia.repository.InquiryRepository;
 import com.hadasupia.support.ConflictException;
 import com.hadasupia.support.NotFoundException;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -18,12 +20,13 @@ public class InquiryService {
 
     private final InquiryRepository repository;
     private final SlotService slotService;
-    private final MailService mailService;
+    private final ApplicationEventPublisher publisher;
 
-    public InquiryService(InquiryRepository repository, SlotService slotService, MailService mailService) {
+    public InquiryService(InquiryRepository repository, SlotService slotService,
+                          ApplicationEventPublisher publisher) {
         this.repository = repository;
         this.slotService = slotService;
-        this.mailService = mailService;
+        this.publisher = publisher;
     }
 
     // ----- 접수 (유저 사이트) -----
@@ -56,7 +59,8 @@ public class InquiryService {
         q.setStatus(InquiryStatus.PENDING);
 
         repository.save(q);
-        mailService.notifyNewInquiry(q);
+        // 커밋된 뒤에 보내야 한다. 롤백되면 알림도 나가지 않는다.
+        publisher.publishEvent(new InquirySubmitted(q.getId()));
         return q.getId();
     }
 
@@ -139,7 +143,13 @@ public class InquiryService {
         return detail(id);
     }
 
+    /** 대시보드 경고용 — InquiryNotifier 의 재시도 창과 같은 기간만 센다. */
     @Transactional(readOnly = true)
+    public long countUnnotified() {
+        return repository.countByNotifiedAtIsNullAndSubmittedAtAfter(
+                Instant.now().minus(InquiryNotifier.RETRY_WINDOW));
+    }
+
     public long countPending() { return repository.countByStatus(InquiryStatus.PENDING); }
 
     @Transactional(readOnly = true)

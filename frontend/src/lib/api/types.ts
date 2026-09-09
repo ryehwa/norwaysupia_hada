@@ -57,6 +57,8 @@ export interface InquiryRow {
   status: InquiryStatusLabel;
   reserved: boolean;
   confirmed: boolean;
+  notified: boolean;
+  notifyError: string | null;
 }
 
 export interface InquiryDetail extends InquiryRow {
@@ -66,6 +68,8 @@ export interface InquiryDetail extends InquiryRow {
   workDate: string | null;
   consultEndTime: string | null;
   note: string | null;
+  notifiedAt: string | null;
+  notifyTries: number;
 }
 
 export interface SlotView {
@@ -78,5 +82,6 @@ export interface DashboardView {
   projectCount: number;
   pendingCount: number;
   totalInquiryCount: number;
+  unnotifiedCount: number;
   recentInquiries: InquiryRow[];
 }

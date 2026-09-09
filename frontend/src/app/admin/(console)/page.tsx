@@ -50,6 +50,33 @@ export default function DashboardPage() {
         {stat('시공 사례', data?.projectCount)}
         {stat('신규 문의', data?.pendingCount)}
         {stat('전체 문의', data?.totalInquiryCount)}
+        {/* 알림이 못 나간 건이 있을 때만 드러낸다 */}
+        {!!data?.unnotifiedCount && (
+          <div style={{ ...card, padding: 28, borderColor: theme.color.danger }}>
+            <div
+              style={{
+                fontFamily: theme.font.mono,
+                fontSize: 11,
+                letterSpacing: '.2em',
+                textTransform: 'uppercase',
+                color: theme.color.danger,
+              }}
+            >
+              알림 미발송
+            </div>
+            <div
+              style={{
+                fontFamily: theme.font.display,
+                fontWeight: 600,
+                fontSize: 40,
+                marginTop: 8,
+                color: theme.color.danger,
+              }}
+            >
+              {data.unnotifiedCount}
+            </div>
+          </div>
+        )}
       </div>
 
       <h2 style={{ ...h2, marginBottom: 16 }}>최근 문의</h2>
