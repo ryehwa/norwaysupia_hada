@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { publicApi } from '@/lib/api/public';
 import { theme } from '@/lib/theme';
+import ProjectGallery from '@/components/user/ProjectGallery';
 
 export const revalidate = 60;
 
@@ -95,17 +96,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
           IMAGE
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-          {project.photos.map((photo) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={photo.id}
-              src={photo.url}
-              alt={project.title}
-              style={{ width: '100%', height: 'auto', display: 'block' }}
-            />
-          ))}
-        </div>
+        <ProjectGallery photos={project.photos} title={project.title} />
       )}
 
       <div style={{ textAlign: 'center', marginTop: 72 }}>

@@ -26,3 +26,43 @@ button { border: none; background: none; cursor: pointer; color: inherit; }
 .admin-home-card:hover .admin-home-overlay {
   opacity: 1;
 }
+
+/* 시공사례 상세 — 대표 사진 아래 나머지 사진. 한 행 5장, 좁은 화면에서는 줄인다 */
+.works-photo-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+}
+@media (max-width: 900px) {
+  .works-photo-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 560px) {
+  .works-photo-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 하단 사진은 눌러서 상단으로 올릴 수 있다 */
+.works-photo-thumb {
+  transition: opacity 0.15s;
+}
+.works-photo-thumb:hover {
+  opacity: 0.78;
+}
+
+/*
+ * 시공사례 상세 — 상단 대표 사진 프레임.
+ * 원본 비율과 무관하게 3:2 프레임 안에 전체가 들어오도록 contain 으로 맞춘다.
+ * 높이 상한(68vh)은 폭으로 환산해 걸어서, 큰 화면에서도 비율이 틀어지지 않게 한다.
+ */
+.works-photo-lead {
+  display: block;
+  width: 100%;
+  max-width: calc(68vh * 3 / 2);
+  margin: 0 auto;
+  aspect-ratio: 3 / 2;
+  object-fit: contain;
+  background: #EDEAE4;
+}
