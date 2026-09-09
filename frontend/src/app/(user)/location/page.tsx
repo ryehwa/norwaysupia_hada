@@ -4,10 +4,12 @@ import { useEffect, useRef } from 'react';
 import { theme } from '@/lib/theme';
 import PageHeading from '@/components/user/PageHeading';
 
-const ADDRESS = '서울특별시 동작구 사당로16가길 106';
 const NAVER_CLIENT_ID = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID;
-const NAVER_MAP_URL = 'https://map.naver.com/p/search/' + encodeURIComponent(ADDRESS);
-const FALLBACK_LATLNG = { lat: 37.4842, lng: 126.9776 };
+// 검색을 거치지 않고 네이버 지도의 업체 상세(플레이스)로 바로 보낸다.
+const NAVER_PLACE_ID = '1215407640';
+const NAVER_MAP_URL = `https://map.naver.com/p/entry/place/${NAVER_PLACE_ID}`;
+// 사무실 위치. 주소가 고정이라 Geocoding 을 호출하지 않고 좌표를 직접 쓴다.
+const OFFICE_LATLNG = { lat: 37.4853858, lng: 126.9684815 };
 
 const INFO = [
   { label: 'Address', lines: ['서울시 동작구', '사당로 16가길 106, 1층'] },
@@ -37,25 +39,9 @@ export default function LocationPage() {
       if (!naver?.maps || !mapRef.current) return;
       initialized.current = true;
 
-      const draw = (lat: number, lng: number) => {
-        const pos = new naver.maps.LatLng(lat, lng);
-        const map = new naver.maps.Map(mapRef.current, { center: pos, zoom: 16 });
-        new naver.maps.Marker({ position: pos, map });
-      };
-
-      const service = naver.maps.Service;
-      if (service?.geocode) {
-        service.geocode({ query: ADDRESS }, (_status: unknown, res: any) => {
-          try {
-            const a = res.v2.addresses[0];
-            draw(parseFloat(a.y), parseFloat(a.x));
-          } catch {
-            draw(FALLBACK_LATLNG.lat, FALLBACK_LATLNG.lng);
-          }
-        });
-      } else {
-        draw(FALLBACK_LATLNG.lat, FALLBACK_LATLNG.lng);
-      }
+      const pos = new naver.maps.LatLng(OFFICE_LATLNG.lat, OFFICE_LATLNG.lng);
+      const map = new naver.maps.Map(mapRef.current, { center: pos, zoom: 16 });
+      new naver.maps.Marker({ position: pos, map });
     };
 
     const existing = document.querySelector<HTMLScriptElement>('script[data-naver-map]');
@@ -66,7 +52,7 @@ export default function LocationPage() {
     }
 
     const script = document.createElement('script');
-    script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${NAVER_CLIENT_ID}&submodules=geocoder`;
+    script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${NAVER_CLIENT_ID}`;
     script.async = true;
     script.dataset.naverMap = 'true';
     script.onload = build;
