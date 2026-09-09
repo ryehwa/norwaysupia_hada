@@ -13,6 +13,10 @@ spring:
     open-in-view: false
     properties:
       hibernate.format_sql: true
+      # Instant 를 datetime 컬럼에 쓸 때 기준 시간대. KST 로 저장해
+      # DB 콘솔에서 조회한 값과 화면에 보이는 값이 일치하게 한다.
+      # (국내 전용 서비스이고 KST 는 서머타임이 없어 모호함이 생기지 않는다)
+      hibernate.jdbc.time_zone: Asia/Seoul
   servlet:
     multipart:
       max-file-size: 10MB

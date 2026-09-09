@@ -1,6 +1,8 @@
 package com.hadasupia.domain;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -68,9 +70,11 @@ public class Inquiry {
     private InquiryStatus status = InquiryStatus.PENDING;
 
     @Column(nullable = false)
+    @JdbcTypeCode(SqlTypes.TIMESTAMP)
     private Instant submittedAt = Instant.now();
 
     /** 알림 메일 발송 완료 시각. null 이면 아직 못 보낸 건이다. */
+    @JdbcTypeCode(SqlTypes.TIMESTAMP)
     private Instant notifiedAt;
 
     /** 마지막 발송 실패 사유 (SMTP 응답 코드 포함) */

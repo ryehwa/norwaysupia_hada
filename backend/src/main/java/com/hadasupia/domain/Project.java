@@ -1,6 +1,8 @@
 package com.hadasupia.domain;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -32,9 +34,11 @@ public class Project {
     private Long thumbnailPhotoId;
 
     @Column(nullable = false)
+    @JdbcTypeCode(SqlTypes.TIMESTAMP)
     private Instant createdAt = Instant.now();
 
     @Column(nullable = false)
+    @JdbcTypeCode(SqlTypes.TIMESTAMP)
     private Instant updatedAt = Instant.now();
 
     @PreUpdate

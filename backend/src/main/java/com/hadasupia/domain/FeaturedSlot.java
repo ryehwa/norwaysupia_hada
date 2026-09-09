@@ -1,6 +1,8 @@
 package com.hadasupia.domain;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
 
@@ -24,6 +26,7 @@ public class FeaturedSlot {
     private Project project;
 
     @Column(nullable = false)
+    @JdbcTypeCode(SqlTypes.TIMESTAMP)
     private Instant updatedAt = Instant.now();
 
     public FeaturedSlot() {}
