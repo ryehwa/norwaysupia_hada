@@ -10,8 +10,18 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * 브라우저에서는 상대경로 그대로 두어 next.config.mjs 의 rewrites 프록시를 태운다.
+ * 서버 컴포넌트에는 프록시가 없고 상대경로 fetch 도 불가능하므로 백엔드를 직접 부른다.
+ */
+function resolve(path: string): string {
+  if (typeof window !== 'undefined') return path;
+  const origin = process.env.BACKEND_ORIGIN ?? 'http://localhost:8080';
+  return origin.replace(/\/$/, '') + path;
+}
+
 export async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(path, {
+  const res = await fetch(resolve(path), {
     credentials: 'include',
     cache: 'no-store',
     ...init,
