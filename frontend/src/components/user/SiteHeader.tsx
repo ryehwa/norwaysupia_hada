@@ -29,6 +29,7 @@ export default function SiteHeader() {
       }}
     >
       <div
+        className="site-header-bar"
         style={{
           display: 'flex',
           flexWrap: 'wrap',
@@ -38,7 +39,7 @@ export default function SiteHeader() {
           padding: 'clamp(12px,2.6vw,20px) clamp(16px,4vw,44px)',
         }}
       >
-        <Link href="/" style={{ display: 'flex', alignItems: 'center' }}>
+        <Link href="/" className="site-header-logo" style={{ display: 'flex', alignItems: 'center' }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/logos/combined_trim.png"
@@ -48,13 +49,11 @@ export default function SiteHeader() {
         </Link>
 
         <nav
+          className="site-header-nav"
           style={{
             display: 'flex',
             flexWrap: 'wrap',
             alignItems: 'center',
-            justifyContent: 'flex-end',
-            gap: 'clamp(28px,5vw,64px)',
-            fontSize: 14,
             letterSpacing: '.02em',
           }}
         >
@@ -70,7 +69,6 @@ export default function SiteHeader() {
                   lineHeight: 1,
                   color: theme.color.inkSoft,
                   fontFamily: item.mono ? theme.font.mono : theme.font.sansKr,
-                  fontSize: 14,
                   letterSpacing: item.mono ? '.12em' : undefined,
                 }}
               >

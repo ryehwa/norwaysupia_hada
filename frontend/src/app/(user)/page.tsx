@@ -24,9 +24,9 @@ export default async function HomePage() {
     <>
       {/* ---------- 히어로 ---------- */}
       <section
+        className="home-hero"
         style={{
           position: 'relative',
-          height: 'clamp(440px,60vh,640px)',
           background: `${theme.color.placeholder} url('${HERO_IMAGE}') center/cover no-repeat`,
           overflow: 'hidden',
         }}
@@ -39,22 +39,21 @@ export default async function HomePage() {
           }}
         />
         <div
+          className="home-hero-inner"
           style={{
             position: 'absolute',
             left: 0,
             right: 0,
-            bottom: 76,
             textAlign: 'center',
             color: '#fff',
-            padding: '0 24px',
           }}
         >
           <div
+            className="home-hero-logos"
             style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              marginBottom: 30,
               transform: 'translateX(0.5cm)',
             }}
           >
@@ -63,59 +62,44 @@ export default async function HomePage() {
               <img
                 src="/logos/supia_vec_white.png"
                 alt="노르웨이수피아 인테리어"
-                style={{ height: 'clamp(32px,4.6vw,44px)', width: 'auto', objectFit: 'contain' }}
+                className="home-hero-logo"
+                style={{ width: 'auto', objectFit: 'contain' }}
               />
             </div>
             <div
-              style={{
-                width: 1,
-                height: 44,
-                background: 'rgba(255,255,255,.5)',
-                margin: '0 clamp(16px,2.5vw,28px)',
-                flex: 'none',
-              }}
+              className="home-hero-divider"
+              style={{ width: 1, background: 'rgba(255,255,255,.5)', flex: 'none' }}
             />
             <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start' }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/logos/hada_white.png"
                 alt="하다건설"
-                style={{ height: 'clamp(32px,4.6vw,44px)', width: 'auto', objectFit: 'contain' }}
+                className="home-hero-logo"
+                style={{ width: 'auto', objectFit: 'contain' }}
               />
             </div>
           </div>
 
           <div
+            className="home-hero-label"
             style={{
               fontFamily: theme.font.mono,
-              fontSize: 12,
-              letterSpacing: '.36em',
               textTransform: 'uppercase',
               opacity: 0.9,
-              marginBottom: 22,
             }}
           >
             Build &amp; Interior · One-stop
           </div>
           <h1
-            style={{
-              fontFamily: theme.font.serifKr,
-              fontWeight: 400,
-              fontSize: 'clamp(30px,6.5vw,54px)',
-              lineHeight: 1.3,
-              margin: '0 0 20px',
-            }}
+            className="home-hero-title"
+            style={{ fontFamily: theme.font.serifKr, fontWeight: 400, lineHeight: 1.3 }}
           >
             공간을 짓고, 삶을 담다
           </h1>
           <p
-            style={{
-              fontFamily: theme.font.sansKr,
-              fontWeight: 300,
-              fontSize: 16,
-              opacity: 0.9,
-              margin: 0,
-            }}
+            className="home-hero-desc"
+            style={{ fontFamily: theme.font.sansKr, fontWeight: 300, opacity: 0.9, margin: 0 }}
           >
             설계·시공부터 인테리어까지, 하나의 팀이 완성합니다
           </p>

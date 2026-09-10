@@ -66,3 +66,104 @@ button { border: none; background: none; cursor: pointer; color: inherit; }
   object-fit: contain;
   background: #EDEAE4;
 }
+
+
+/*
+ * 헤더 — 좁은 화면에서는 로고와 메뉴를 위아래로 나눈다.
+ * 로고 비율이 3:1이라 가로 400px 에서 로고(140px) + 메뉴(276px)가
+ * 콘텐츠 폭(368px)을 넘는다. 로고를 92px 이하로 줄이면 1열에 들어가지만
+ * 그 높이(30px)에서는 회사명이 읽히지 않는다.
+ */
+.site-header-nav {
+  justify-content: flex-end;
+  gap: clamp(28px, 5vw, 64px);
+}
+.site-header-nav a {
+  font-size: 14px;
+}
+
+@media (max-width: 720px) {
+  .site-header-bar {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .site-header-bar .site-header-logo {
+    justify-content: center;
+  }
+  /* 메뉴 묶음을 가운데 두고 항목 사이는 같은 간격으로 */
+  .site-header-bar .site-header-nav {
+    width: 100%;
+    justify-content: center;
+    gap: clamp(20px, 7vw, 40px);
+  }
+  /* 폭이 좁아지는 만큼 글자도 함께 줄인다 (320px 에서 12px) */
+  .site-header-bar .site-header-nav a {
+    font-size: clamp(12px, 3.4vw, 14px);
+  }
+}
+
+/* ── HOME 히어로 ────────────────────────────────
+ * 데스크톱 값은 시안에서 확정된 것이고, 좁은 화면에서는 대략 절반으로 줄인다.
+ * 320px 기기에서 히어로가 화면을 다 먹어 아래 콘텐츠가 안 보이는 것을 막는다.
+ */
+.home-hero {
+  height: clamp(440px, 60vh, 640px);
+}
+.home-hero-inner {
+  bottom: 76px;
+  padding: 0 24px;
+}
+.home-hero-logos {
+  margin-bottom: 30px;
+}
+.home-hero-logo {
+  height: clamp(32px, 4.6vw, 44px);
+}
+.home-hero-divider {
+  height: 44px;
+  margin: 0 clamp(16px, 2.5vw, 28px);
+}
+.home-hero-label {
+  font-size: 12px;
+  letter-spacing: 0.36em;
+  margin-bottom: 22px;
+}
+.home-hero-title {
+  font-size: clamp(30px, 6.5vw, 54px);
+  margin: 0 0 20px;
+}
+.home-hero-desc {
+  font-size: 16px;
+}
+
+@media (max-width: 560px) {
+  .home-hero {
+    height: 240px;
+  }
+  .home-hero-inner {
+    bottom: 32px;
+    padding: 0 20px;
+  }
+  .home-hero-logos {
+    margin-bottom: 14px;
+  }
+  .home-hero-logo {
+    height: 20px;
+  }
+  .home-hero-divider {
+    height: 24px;
+    margin: 0 12px;
+  }
+  .home-hero-label {
+    font-size: 10px;
+    letter-spacing: 0.24em;
+    margin-bottom: 10px;
+  }
+  .home-hero-title {
+    font-size: 20px;
+    margin: 0 0 8px;
+  }
+  .home-hero-desc {
+    font-size: 12px;
+  }
+}
