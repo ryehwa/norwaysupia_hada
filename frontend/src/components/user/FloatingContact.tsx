@@ -33,10 +33,15 @@ export default function FloatingContact() {
         gap: 12,
       }}
     >
+      {/*
+        noreferrer 로 유입 경로를 보내지 않는다.
+        카카오 채널 채팅이 인사말에 "이전 페이지"로 이 값을 노출하는데,
+        브라우저가 출처까지만 보내 도메인만 찍히는 탓에 정보량이 없었다.
+      */}
       <a
         href={KAKAO_URL}
         target="_blank"
-        rel="noopener"
+        rel="noopener noreferrer"
         title="카카오톡 상담"
         style={{ ...circle, background: '#FEE500' }}
       >
