@@ -137,34 +137,40 @@ button { border: none; background: none; cursor: pointer; color: inherit; }
 }
 
 @media (max-width: 560px) {
+  /*
+   * 높이를 고정하면 폭이 넓어질수록 납작해진다(560px 에서 2.3:1).
+   * 폭에 비례시켜 4:3 을 유지하되, 가로로 눕힌 화면에서 화면을 다 먹지 않도록
+   * 세로 기준 상한을 함께 건다.
+   * 아래 값들은 560px 에서 데스크톱 값과 만나도록 맞춰, 경계에서 튀지 않는다.
+   */
   .home-hero {
-    height: 240px;
+    height: min(75vw, 70vh);
   }
   .home-hero-inner {
-    bottom: 32px;
+    bottom: clamp(32px, 13.5vw, 76px);
     padding: 0 20px;
   }
   .home-hero-logos {
-    margin-bottom: 14px;
+    margin-bottom: clamp(14px, 5.4vw, 30px);
   }
   .home-hero-logo {
-    height: 20px;
+    height: clamp(20px, 5.7vw, 32px);
   }
   .home-hero-divider {
-    height: 24px;
-    margin: 0 12px;
+    height: clamp(24px, 7.9vw, 44px);
+    margin: 0 clamp(12px, 2.9vw, 16px);
   }
   .home-hero-label {
-    font-size: 10px;
-    letter-spacing: 0.24em;
-    margin-bottom: 10px;
+    font-size: clamp(10px, 2.2vw, 12px);
+    letter-spacing: clamp(0.24em, 0.065vw + 0.22em, 0.36em);
+    margin-bottom: clamp(10px, 3.9vw, 22px);
   }
   .home-hero-title {
-    font-size: 20px;
-    margin: 0 0 8px;
+    font-size: clamp(20px, 5.4vw, 30px);
+    margin: 0 0 clamp(8px, 3.6vw, 20px);
   }
   .home-hero-desc {
-    font-size: 12px;
+    font-size: clamp(12px, 2.9vw, 16px);
   }
 }
 
