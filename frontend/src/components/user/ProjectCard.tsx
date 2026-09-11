@@ -14,7 +14,10 @@ export default function ProjectCard({
 }) {
   return (
     <Link href={`/works/${project.id}`} style={{ display: 'block' }}>
-      <div style={{ position: 'relative', height, background: theme.color.placeholder, overflow: 'hidden' }}>
+      <div
+        className="project-card-media"
+        style={{ position: 'relative', height, background: theme.color.placeholder, overflow: 'hidden' }}
+      >
         {project.thumbnailUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -31,7 +34,7 @@ export default function ProjectCard({
               alignItems: 'center',
               justifyContent: 'center',
               fontFamily: theme.font.mono,
-              fontSize: 11,
+              fontSize: 'clamp(9px,2.8vw,11px)',
               letterSpacing: '.28em',
               color: '#b6b2a8',
             }}
@@ -42,22 +45,32 @@ export default function ProjectCard({
       </div>
 
       <div
+        className="project-card-caption"
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          // 카테고리 배지가 없으면 제목 하나뿐이므로 사진 기준 가운데로
+          justifyContent: showCategory ? 'space-between' : 'center',
           marginTop: 16,
           gap: 12,
         }}
       >
-        <div style={{ fontFamily: theme.font.serifKr, fontSize: 17, color: theme.color.ink }}>
+        <div
+          className="project-card-title"
+          style={{
+            fontFamily: theme.font.serifKr,
+            fontSize: 'clamp(14px,4vw,17px)',
+            color: theme.color.ink,
+            textAlign: showCategory ? 'left' : 'center',
+          }}
+        >
           {project.title}
         </div>
         {showCategory && (
           <div
             style={{
               fontFamily: theme.font.mono,
-              fontSize: 10,
+              fontSize: 'clamp(9px,2.6vw,10px)',
               letterSpacing: '.14em',
               color: theme.color.faint,
               border: '1px solid #ddd8ce',

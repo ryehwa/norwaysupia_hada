@@ -128,11 +128,11 @@ export default async function HomePage() {
             <div
               style={{
                 fontFamily: theme.font.mono,
-                fontSize: 12,
-                letterSpacing: '.3em',
+                fontSize: 'clamp(10px,3vw,12px)',
+                letterSpacing: 'clamp(.2em,.8vw,.3em)',
                 textTransform: 'uppercase',
                 color: theme.color.label,
-                marginBottom: 12,
+                marginBottom: 'clamp(8px,2.5vw,12px)',
               }}
             >
               Selected Works
@@ -141,7 +141,7 @@ export default async function HomePage() {
               style={{
                 fontFamily: theme.font.display,
                 fontWeight: 500,
-                fontSize: 'clamp(24px,4vw,34px)',
+                fontSize: 'clamp(19px,5vw,34px)',
                 color: theme.color.ink,
                 margin: 0,
               }}
@@ -153,7 +153,7 @@ export default async function HomePage() {
             href="/works"
             style={{
               fontFamily: theme.font.sansKr,
-              fontSize: 14,
+              fontSize: 'clamp(12px,3.4vw,14px)',
               color: theme.color.ink,
               borderBottom: `1px solid ${theme.color.ink}`,
               paddingBottom: 3,
@@ -163,13 +163,7 @@ export default async function HomePage() {
           </Link>
         </div>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit,minmax(240px,1fr))',
-            gap: 24,
-          }}
-        >
+        <div className="home-featured-grid" style={{ display: 'grid' }}>
           {featured.map((slot) =>
             slot.project ? (
               <ProjectCard
@@ -181,11 +175,8 @@ export default async function HomePage() {
             ) : (
               <div key={slot.slotIndex}>
                 <div
-                  style={{
-                    position: 'relative',
-                    height: 300,
-                    background: theme.color.placeholder,
-                  }}
+                  className="home-featured-media"
+                  style={{ position: 'relative', background: theme.color.placeholder }}
                 >
                   <span
                     style={{
@@ -195,8 +186,8 @@ export default async function HomePage() {
                       alignItems: 'center',
                       justifyContent: 'center',
                       fontFamily: theme.font.mono,
-                      fontSize: 11,
-                      letterSpacing: '.28em',
+                      fontSize: 'clamp(9px,2.8vw,11px)',
+                      letterSpacing: 'clamp(.18em,.7vw,.28em)',
                       color: '#b6b2a8',
                     }}
                   >
