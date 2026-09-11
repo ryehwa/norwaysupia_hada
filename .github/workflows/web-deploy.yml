@@ -1,0 +1,66 @@
+name: Web Build and Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/web-deploy.yml'
+      - '.github/actions/k8s-image-bump/**'
+  workflow_dispatch:
+
+concurrency:
+  group: web-deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # NEXT_PUBLIC_* 는 번들에 인라인되므로 런타임이 아니라 build-arg 로 넘어가야 한다.
+  # 값이 비어 있어도 빌드는 통과하고 지도·상담 버튼만 동작하지 않는다.
+  NEXT_PUBLIC_NAVER_MAP_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID }}
+  NEXT_PUBLIC_KAKAO_CHANNEL_URL: ${{ secrets.NEXT_PUBLIC_KAKAO_CHANNEL_URL }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Connect to Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.OAUTH_SECRET }}
+          tags: tag:ci
+
+      - name: Wait for registry
+        run: |
+          for i in {1..10}; do
+            if curl -s --connect-timeout 5 http://100.114.108.81:30500/v2/; then
+              echo "Registry connected!"
+              break
+            fi
+            echo "Attempt $i failed, retrying..."
+            sleep 3
+          done
+
+      - uses: actions/checkout@v4
+
+      - name: Configure Docker for insecure registry
+        run: |
+          sudo mkdir -p /etc/docker
+          echo '{"insecure-registries": ["100.114.108.81:30500"]}' | sudo tee /etc/docker/daemon.json
+          sudo systemctl restart docker
+
+      - name: Build & Push
+        run: |
+          docker build \
+            --build-arg NEXT_PUBLIC_NAVER_MAP_CLIENT_ID="${NEXT_PUBLIC_NAVER_MAP_CLIENT_ID}" \
+            --build-arg NEXT_PUBLIC_KAKAO_CHANNEL_URL="${NEXT_PUBLIC_KAKAO_CHANNEL_URL}" \
+            -t 100.114.108.81:30500/hada-web:${{ github.sha }} frontend/
+          docker push 100.114.108.81:30500/hada-web:${{ github.sha }}
+
+      - name: Update k8s manifest
+        uses: ./.github/actions/k8s-image-bump
+        with:
+          image: hada-web
+          sha: ${{ github.sha }}
+          k8s-pat: ${{ secrets.GH_GOMTAK }}

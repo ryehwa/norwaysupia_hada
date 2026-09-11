@@ -1,0 +1,78 @@
+name: 'Bump k8s image tag'
+description: >-
+  gomtaky/k8s 를 클론해 hada/<image>/deployment.yaml 의 이미지 태그를 bump 하고,
+  동시 push 경합을 rebase-retry 로 처리한 뒤 push 한다.
+  실패(패턴 불일치·파일 부재·5회 push 실패·rebase 충돌)는 조용히 넘기지 않고 job 을 실패시킨다.
+
+inputs:
+  image:
+    description: '레지스트리 이미지명 (hada-api 또는 hada-web)'
+    required: true
+  sha:
+    description: '배포할 이미지 태그 (커밋 SHA)'
+    required: true
+  k8s-pat:
+    description: 'gomtaky/k8s write 권한 PAT'
+    required: true
+  manifest-dir:
+    description: 'k8s 레포 안의 매니페스트 세트 디렉토리'
+    required: false
+    default: 'hada'
+
+runs:
+  using: composite
+  steps:
+    - name: Update k8s manifest
+      shell: bash
+      env:
+        IMAGE: ${{ inputs.image }}
+        SHA: ${{ inputs.sha }}
+        K8S_PAT: ${{ inputs.k8s-pat }}
+        MANIFEST_DIR: ${{ inputs.manifest-dir }}
+      run: |
+        set -euo pipefail
+
+        registry="registry.infra.svc.cluster.local:5000"
+        manifest="${MANIFEST_DIR}/${IMAGE}/deployment.yaml"
+
+        git clone "https://x-access-token:${K8S_PAT}@github.com/gomtaky/k8s.git" /tmp/k8s
+        cd /tmp/k8s
+
+        # 1) 매니페스트 존재 확인 (구조 변경 시 sed 가 push 뒤 실패하는 것을 방지)
+        if [ ! -f "$manifest" ]; then
+          echo "::error::manifest not found: $manifest"
+          exit 1
+        fi
+
+        # 2) 대상 image 라인 존재 확인 (형식 drift 시 sed 의 조용한 no-op 방지)
+        if ! grep -q "image: ${registry}/${IMAGE}:" "$manifest"; then
+          echo "::error::image line 'image: ${registry}/${IMAGE}:' not found in $manifest (pattern drift?)"
+          exit 1
+        fi
+
+        sed -i "s|image: ${registry}/${IMAGE}:.*|image: ${registry}/${IMAGE}:${SHA}|" "$manifest"
+
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add "$manifest"
+
+        if git diff --staged --quiet; then
+          echo "No image change to commit"
+          exit 0
+        fi
+
+        git commit -m "deploy(${IMAGE}): ${SHA}"
+
+        # 3) web/api 두 워크플로가 같은 레포를 동시에 건드린다. 경합은 rebase 후 재시도.
+        for i in 1 2 3 4 5; do
+          if git push 2>&1; then
+            echo "Pushed on attempt $i"
+            exit 0
+          fi
+          echo "Push attempt $i failed (concurrent race), rebasing..."
+          git pull --rebase origin main
+          sleep $((i * 2))
+        done
+
+        echo "::error::git push failed after 5 attempts"
+        exit 1

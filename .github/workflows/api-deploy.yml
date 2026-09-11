@@ -1,0 +1,165 @@
+name: API Build and Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/api-deploy.yml'
+      - '.github/actions/k8s-image-bump/**'
+  workflow_dispatch:
+
+concurrency:
+  group: api-deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      # 아직 테스트가 없어 컴파일·패키징만 검증한다. 테스트를 추가하면
+      # Postgres service container 와 application.yml 이 요구하는 env 를 함께 붙일 것.
+      - name: Build
+        working-directory: backend
+        run: ./gradlew build --no-daemon
+
+  # 런타임 자격증명을 클러스터 Secret 으로 반영한다. 값의 원본은 이 레포의
+  # Actions secrets 이고 클러스터에는 복사본만 둔다(git 에는 남기지 않는다).
+  #
+  # 쓰는 계정은 hada ns 의 secret 쓰기 권한만 가진 ServiceAccount 다.
+  # 파드 조작·다른 네임스페이스 접근 권한이 없어 토큰이 새도 영향이 갇힌다.
+  #
+  # 갱신된 Secret 은 파드가 새로 뜰 때 반영된다. 뒤이어 build 가 이미지 태그를
+  # 올리면 ArgoCD 가 파드를 교체하므로 따로 재시작할 필요가 없다.
+  # 값만 바꿨을 때는 이 워크플로를 workflow_dispatch 로 돌린 뒤 직접 재시작할 것.
+  sync-secrets:
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Connect to Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.OAUTH_SECRET }}
+          tags: tag:ci
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Configure cluster access
+        env:
+          K8S_TOKEN: ${{ secrets.K8S_TOKEN }}
+          K8S_CA: ${{ secrets.K8S_CA }}
+        run: |
+          set -euo pipefail
+
+          # API 서버 인증서 SAN 에 Tailscale IP 는 없고 DNS:gomtakhome 은 있다.
+          # 호스트명으로 붙여야 인증서 검증이 통과한다.
+          echo "100.114.108.81 gomtakhome" | sudo tee -a /etc/hosts > /dev/null
+
+          echo "$K8S_CA" | base64 -d > /tmp/k3s-ca.crt
+          kubectl config set-cluster home \
+            --server=https://gomtakhome:6443 \
+            --certificate-authority=/tmp/k3s-ca.crt --embed-certs=true
+          kubectl config set-credentials ci --token="$K8S_TOKEN"
+          kubectl config set-context home --cluster=home --user=ci --namespace=hada
+          kubectl config use-context home
+
+      - name: Apply hada-secrets
+        env:
+          DB_URL: ${{ secrets.DB_URL }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          ADMIN_USERNAME: ${{ secrets.ADMIN_USERNAME }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          FRONTEND_ORIGIN: ${{ secrets.FRONTEND_ORIGIN }}
+          UPLOAD_DIR: ${{ secrets.UPLOAD_DIR }}
+          MAIL_ENABLED: ${{ secrets.MAIL_ENABLED }}
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+        run: |
+          set -euo pipefail
+
+          # application.yml 에 기본값이 없어 하나라도 비면 기동이 실패한다.
+          # 배포 뒤 CrashLoop 으로 발견하는 대신 여기서 멈춘다.
+          missing=""
+          for k in DB_URL DB_USER DB_PASSWORD ADMIN_USERNAME ADMIN_PASSWORD \
+                   FRONTEND_ORIGIN UPLOAD_DIR MAIL_ENABLED MAIL_USERNAME \
+                   MAIL_PASSWORD MAIL_TO; do
+            [ -n "${!k:-}" ] || missing="$missing $k"
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::비어 있는 시크릿:$missing"
+            exit 1
+          fi
+
+          kubectl create secret generic hada-secrets \
+            --from-literal=DB_URL="$DB_URL" \
+            --from-literal=DB_USER="$DB_USER" \
+            --from-literal=DB_PASSWORD="$DB_PASSWORD" \
+            --from-literal=ADMIN_USERNAME="$ADMIN_USERNAME" \
+            --from-literal=ADMIN_PASSWORD="$ADMIN_PASSWORD" \
+            --from-literal=FRONTEND_ORIGIN="$FRONTEND_ORIGIN" \
+            --from-literal=UPLOAD_DIR="$UPLOAD_DIR" \
+            --from-literal=MAIL_ENABLED="$MAIL_ENABLED" \
+            --from-literal=MAIL_USERNAME="$MAIL_USERNAME" \
+            --from-literal=MAIL_PASSWORD="$MAIL_PASSWORD" \
+            --from-literal=MAIL_TO="$MAIL_TO" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+  build:
+    needs: [check, sync-secrets]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Connect to Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.OAUTH_SECRET }}
+          tags: tag:ci
+
+      - name: Wait for registry
+        run: |
+          for i in {1..10}; do
+            if curl -s --connect-timeout 5 http://100.114.108.81:30500/v2/; then
+              echo "Registry connected!"
+              break
+            fi
+            echo "Attempt $i failed, retrying..."
+            sleep 3
+          done
+
+      - uses: actions/checkout@v4
+
+      - name: Configure Docker for insecure registry
+        run: |
+          sudo mkdir -p /etc/docker
+          echo '{"insecure-registries": ["100.114.108.81:30500"]}' | sudo tee /etc/docker/daemon.json
+          sudo systemctl restart docker
+
+      - name: Build & Push
+        run: |
+          docker build -t 100.114.108.81:30500/hada-api:${{ github.sha }} backend/
+          docker push 100.114.108.81:30500/hada-api:${{ github.sha }}
+
+      - name: Update k8s manifest
+        uses: ./.github/actions/k8s-image-bump
+        with:
+          image: hada-api
+          sha: ${{ github.sha }}
+          k8s-pat: ${{ secrets.GH_GOMTAK }}
