@@ -206,16 +206,16 @@ export default async function HomePage() {
           background: theme.color.ink,
           color: '#fff',
           textAlign: 'center',
-          padding: 'clamp(56px,10vw,96px) 24px',
+          padding: 'clamp(48px,10vw,96px) clamp(20px,4vw,24px)',
         }}
       >
         <h2
           style={{
             fontFamily: theme.font.serifKr,
             fontWeight: 300,
-            fontSize: 'clamp(26px,4.5vw,36px)',
+            fontSize: 'clamp(20px,5vw,36px)',
             lineHeight: 1.4,
-            margin: '0 0 30px',
+            margin: '0 0 clamp(16px,4vw,30px)',
           }}
         >
           공간을 계획하고 계신가요?
@@ -225,10 +225,10 @@ export default async function HomePage() {
           style={{
             display: 'inline-block',
             fontFamily: theme.font.sansKr,
-            fontSize: 15,
+            fontSize: 'clamp(12px,3.4vw,15px)',
             color: theme.color.ink,
             background: '#fff',
-            padding: '15px 40px',
+            padding: 'clamp(13px,3vw,15px) clamp(20px,6.5vw,40px)',
             border: '1px solid #fff',
           }}
         >
