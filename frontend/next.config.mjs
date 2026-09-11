@@ -3,6 +3,9 @@ const backend = process.env.BACKEND_ORIGIN ?? 'http://localhost:8080';
 
 const nextConfig = {
   reactStrictMode: true,
+  // 컨테이너 이미지에 런타임 최소 파일만 담기 위한 출력 모드.
+  // 이 값이 없으면 .next/standalone 이 생성되지 않아 Dockerfile 이 깨진다.
+  output: 'standalone',
   images: {
     remotePatterns: [
       { protocol: 'http', hostname: 'localhost', port: '8080', pathname: '/uploads/**' },
