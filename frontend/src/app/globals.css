@@ -204,3 +204,58 @@ button { border: none; background: none; cursor: pointer; color: inherit; }
     overflow-wrap: break-word;
   }
 }
+
+/* ── 푸터 ────────────────────────────────────────
+ * 로고 묶음(177px) + 텍스트(280px) + 간격이 565px 를 넘지 못해
+ * 그 아래에서 두 줄로 내려앉는다. 그 지점에서 세로로 쌓고 가운데 정렬한다.
+ */
+.site-footer {
+  padding: clamp(36px, 7vw, 56px) clamp(20px, 5vw, 40px);
+}
+.site-footer-inner {
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 28px;
+}
+.site-footer-logo-hada {
+  height: 38px;
+}
+.site-footer-logo-supia {
+  height: 22px;
+}
+.site-footer-divider {
+  height: 24px;
+  margin: 0 20px;
+}
+.site-footer-text {
+  text-align: right;
+  font-size: 12px;
+}
+
+@media (max-width: 560px) {
+  /* 로고 위, 텍스트 아래. 둘 다 가운데로 */
+  .site-footer-inner {
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(16px, 4vw, 28px);
+  }
+  .site-footer-logos {
+    justify-content: center;
+  }
+  /* 로고는 폭에 맞춰 줄인다 — 두 로고의 크기 차이(38:22)는 유지 */
+  .site-footer-logo-hada {
+    height: clamp(26px, 8vw, 38px);
+  }
+  .site-footer-logo-supia {
+    height: clamp(15px, 4.6vw, 22px);
+  }
+  .site-footer-divider {
+    height: clamp(16px, 5vw, 24px);
+    margin: 0 clamp(12px, 4vw, 20px);
+  }
+  .site-footer-text {
+    text-align: center;
+    font-size: clamp(10px, 3vw, 12px);
+    line-height: 1.7;
+  }
+}
