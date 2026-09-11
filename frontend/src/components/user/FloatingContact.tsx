@@ -53,7 +53,8 @@ export default function FloatingContact() {
         </svg>
       </a>
 
-      <a href={`tel:${PHONE}`} title="전화 연결" style={{ ...circle, background: '#1a1a18' }}>
+      {/* 카카오 노랑(54°)과 어우러지도록 색상을 141° 로 잡은 딥그린 */}
+      <a href={`tel:${PHONE}`} title="전화 연결" style={{ ...circle, background: '#1b3a26' }}>
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
           <path
             d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.5.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.4c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.5.1.4 0 .8-.2 1l-2.2 2.3Z"
