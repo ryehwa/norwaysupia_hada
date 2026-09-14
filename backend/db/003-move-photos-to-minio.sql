@@ -13,10 +13,18 @@
 
 ALTER TABLE project_photos ADD COLUMN IF NOT EXISTS object_key varchar(500);
 
--- url 앞의 /uploads/ 만 떼면 그대로 오브젝트 키가 된다.
-UPDATE project_photos
-   SET object_key = regexp_replace(url, '^/uploads/', '')
- WHERE object_key IS NULL;
+-- url 컬럼이 이미 정리된 뒤 다시 실행될 수 있으므로(두 번 돌려도 안전해야 한다)
+-- 컬럼이 살아 있을 때만 백필한다. 그냥 UPDATE 하면 두 번째 실행에서
+-- column "url" does not exist 로 멈춘다.
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns
+              WHERE table_name = 'project_photos' AND column_name = 'url') THEN
+    UPDATE project_photos
+       SET object_key = regexp_replace(url, '^/uploads/', '')
+     WHERE object_key IS NULL;
+  END IF;
+END $$;
 
 ALTER TABLE project_photos ALTER COLUMN object_key SET NOT NULL;
 
