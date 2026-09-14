@@ -18,8 +18,8 @@ WORKDIR /app
 RUN addgroup -S spring && adduser -S spring -G spring
 COPY --from=builder /app/build/libs/*.jar app.jar
 
-# 업로드 경로는 PVC 가 마운트되는 자리. 컨테이너 사용자가 쓸 수 있어야 한다.
-RUN mkdir -p /app/uploads && chown -R spring:spring /app
+# 사진은 MinIO 에 올라가므로 컨테이너에 쓰기 볼륨이 필요 없다.
+RUN chown -R spring:spring /app
 USER spring:spring
 
 EXPOSE 8080

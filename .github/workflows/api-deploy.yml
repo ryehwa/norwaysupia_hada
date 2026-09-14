@@ -29,8 +29,10 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      # 아직 테스트가 없어 컴파일·패키징만 검증한다. 테스트를 추가하면
-      # Postgres service container 와 application.yml 이 요구하는 env 를 함께 붙일 것.
+      # StorageServiceIT 는 실제 MinIO 가 필요해 MINIO_TEST_ENDPOINT 가 있을 때만
+      # 돈다. 여기서는 붙이지 않으므로 사실상 컴파일·패키징 검증이다.
+      # 스프링 컨텍스트를 띄우는 테스트를 추가하면 Postgres service container 와
+      # application.yml 이 요구하는 env 를 함께 붙일 것.
       - name: Build
         working-directory: backend
         run: ./gradlew build --no-daemon
@@ -86,7 +88,11 @@ jobs:
           ADMIN_USERNAME: ${{ secrets.ADMIN_USERNAME }}
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
           FRONTEND_ORIGIN: ${{ secrets.FRONTEND_ORIGIN }}
-          UPLOAD_DIR: ${{ secrets.UPLOAD_DIR }}
+          MINIO_ENDPOINT: ${{ secrets.MINIO_ENDPOINT }}
+          MINIO_PUBLIC_ENDPOINT: ${{ secrets.MINIO_PUBLIC_ENDPOINT }}
+          MINIO_ACCESS_KEY: ${{ secrets.MINIO_ACCESS_KEY }}
+          MINIO_SECRET_KEY: ${{ secrets.MINIO_SECRET_KEY }}
+          MINIO_BUCKET: ${{ secrets.MINIO_BUCKET }}
           MAIL_ENABLED: ${{ secrets.MAIL_ENABLED }}
           MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
           MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
@@ -98,8 +104,9 @@ jobs:
           # 배포 뒤 CrashLoop 으로 발견하는 대신 여기서 멈춘다.
           missing=""
           for k in DB_URL DB_USER DB_PASSWORD ADMIN_USERNAME ADMIN_PASSWORD \
-                   FRONTEND_ORIGIN UPLOAD_DIR MAIL_ENABLED MAIL_USERNAME \
-                   MAIL_PASSWORD MAIL_TO; do
+                   FRONTEND_ORIGIN MINIO_ENDPOINT MINIO_PUBLIC_ENDPOINT \
+                   MINIO_ACCESS_KEY MINIO_SECRET_KEY MINIO_BUCKET \
+                   MAIL_ENABLED MAIL_USERNAME MAIL_PASSWORD MAIL_TO; do
             [ -n "${!k:-}" ] || missing="$missing $k"
           done
           if [ -n "$missing" ]; then
@@ -114,7 +121,11 @@ jobs:
             --from-literal=ADMIN_USERNAME="$ADMIN_USERNAME" \
             --from-literal=ADMIN_PASSWORD="$ADMIN_PASSWORD" \
             --from-literal=FRONTEND_ORIGIN="$FRONTEND_ORIGIN" \
-            --from-literal=UPLOAD_DIR="$UPLOAD_DIR" \
+            --from-literal=MINIO_ENDPOINT="$MINIO_ENDPOINT" \
+            --from-literal=MINIO_PUBLIC_ENDPOINT="$MINIO_PUBLIC_ENDPOINT" \
+            --from-literal=MINIO_ACCESS_KEY="$MINIO_ACCESS_KEY" \
+            --from-literal=MINIO_SECRET_KEY="$MINIO_SECRET_KEY" \
+            --from-literal=MINIO_BUCKET="$MINIO_BUCKET" \
             --from-literal=MAIL_ENABLED="$MAIL_ENABLED" \
             --from-literal=MAIL_USERNAME="$MAIL_USERNAME" \
             --from-literal=MAIL_PASSWORD="$MAIL_PASSWORD" \

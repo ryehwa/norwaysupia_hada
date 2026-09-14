@@ -39,6 +39,18 @@ public class ProjectService {
         this.storageService = storageService;
     }
 
+    /**
+     * 사진 URL 은 만료가 있는 presigned URL 이라 응답을 만들 때마다 새로 서명한다.
+     * DTO 가 스토리지를 모르도록 변환 함수만 넘긴다.
+     */
+    private ProjectView view(Project p) {
+        return ProjectView.of(p, storageService::url);
+    }
+
+    private ProjectSummary summary(Project p) {
+        return ProjectSummary.of(p, storageService::url);
+    }
+
     // ----- 조회 -----
 
     /** 카테고리 필터 + 검색(초성 포함) + 페이지네이션 */
@@ -50,7 +62,7 @@ public class ProjectService {
 
         List<ProjectSummary> filtered = base.stream()
                 .filter(p -> HangulSearch.matches(p.getTitle(), query))
-                .map(ProjectSummary::of)
+                .map(this::summary)
                 .toList();
 
         return PageResponse.of(filtered, page, size);
@@ -58,7 +70,7 @@ public class ProjectService {
 
     @Transactional(readOnly = true)
     public ProjectView get(Long id) {
-        return ProjectView.of(find(id));
+        return view(find(id));
     }
 
     private Project find(Long id) {
@@ -81,7 +93,7 @@ public class ProjectService {
                 if (file != null && !file.isEmpty()) attach(p, file);
             }
         }
-        return ProjectView.of(p);
+        return view(p);
     }
 
     @Transactional
@@ -90,14 +102,14 @@ public class ProjectService {
         p.setTitle(req.title());
         p.setCategory(Category.fromLabel(req.category()));
         p.setDescription(req.description());
-        return ProjectView.of(p);
+        return view(p);
     }
 
     @Transactional
     public void delete(Long id) {
         Project p = find(id);
         for (ProjectPhoto photo : p.getPhotos()) {
-            storageService.delete(photo.getStoragePath());
+            storageService.delete(photo.getObjectKey());
         }
         // HOME에 노출 중이던 칸은 비운다
         featuredRepository.findAllByOrderBySlotIndexAsc().stream()
@@ -116,14 +128,12 @@ public class ProjectService {
                 if (file != null && !file.isEmpty()) attach(p, file);
             }
         }
-        return ProjectView.of(p);
+        return view(p);
     }
 
     private void attach(Project p, MultipartFile file) {
-        StorageService.Stored stored = storageService.store(file);
         ProjectPhoto photo = new ProjectPhoto();
-        photo.setUrl(stored.url());
-        photo.setStoragePath(stored.storagePath());
+        photo.setObjectKey(storageService.store(file));
         p.addPhoto(photo);
         photoRepository.save(photo);
     }
@@ -136,21 +146,21 @@ public class ProjectService {
         Project p = photo.getProject();
 
         p.getPhotos().remove(photo);
-        storageService.delete(photo.getStoragePath());
+        storageService.delete(photo.getObjectKey());
         photoRepository.delete(photo);
 
         if (photo.getId().equals(p.getThumbnailPhotoId())) {
             p.setThumbnailPhotoId(p.getPhotos().isEmpty() ? null : p.getPhotos().get(0).getId());
         }
         resequence(p);
-        return ProjectView.of(p);
+        return view(p);
     }
 
     /** 드래그로 바뀐 순서를 저장한다. */
     @Transactional
     public ProjectView reorderPhotos(Long projectId, List<Long> photoIds) {
         Project p = find(projectId);
-        if (photoIds == null || photoIds.isEmpty()) return ProjectView.of(p);
+        if (photoIds == null || photoIds.isEmpty()) return view(p);
 
         List<ProjectPhoto> ordered = new ArrayList<>();
         for (Long id : photoIds) {
@@ -167,7 +177,7 @@ public class ProjectService {
         p.getPhotos().clear();
         p.getPhotos().addAll(ordered);
         resequence(p);
-        return ProjectView.of(p);
+        return view(p);
     }
 
     private void resequence(Project p) {
@@ -186,14 +196,14 @@ public class ProjectService {
             throw new IllegalArgumentException("해당 사례의 사진이 아닙니다.");
         }
         p.setThumbnailPhotoId(photoId);
-        return ProjectView.of(p);
+        return view(p);
     }
 
     @Transactional
     public ProjectView updateCategory(Long projectId, String categoryLabel) {
         Project p = find(projectId);
         p.setCategory(Category.fromLabel(categoryLabel));
-        return ProjectView.of(p);
+        return view(p);
     }
 
     // ----- HOME 노출 사례 (3칸 고정) -----
@@ -205,7 +215,7 @@ public class ProjectService {
         for (FeaturedSlot slot : slots) {
             views.add(new FeaturedSlotView(
                     slot.getSlotIndex(),
-                    slot.getProject() == null ? null : ProjectSummary.of(slot.getProject())
+                    slot.getProject() == null ? null : summary(slot.getProject())
             ));
         }
         return views;
