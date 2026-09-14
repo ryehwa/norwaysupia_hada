@@ -29,10 +29,9 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      # StorageServiceIT 는 실제 MinIO 가 필요해 MINIO_TEST_ENDPOINT 가 있을 때만
-      # 돈다. 여기서는 붙이지 않으므로 사실상 컴파일·패키징 검증이다.
-      # 스프링 컨텍스트를 띄우는 테스트를 추가하면 Postgres service container 와
-      # application.yml 이 요구하는 env 를 함께 붙일 것.
+      # 통합 테스트는 실제 MinIO·Postgres 가 필요해 MINIO_TEST_ENDPOINT·PG_TEST_URL
+      # 이 있을 때만 돈다. 여기서는 붙이지 않으므로 사실상 컴파일·패키징 검증이다.
+      # service container 를 붙이면 그대로 켜진다.
       - name: Build
         working-directory: backend
         run: ./gradlew build --no-daemon
