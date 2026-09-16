@@ -36,6 +36,19 @@ spring:
 
 server:
   port: 8080
+  servlet:
+    session:
+      timeout: 2h
+      cookie:
+        http-only: true
+        # CSRF 를 껐으므로 다른 사이트에서 오는 요청을 막는 건 이 값이다.
+        # lax 면 외부에서 온 POST 에 쿠키가 실리지 않아 위조 요청이 인증되지 않는다.
+        same-site: lax
+        # 여기만 기본값을 둔다. 빠뜨렸을 때 안전한 쪽(Secure)으로 동작해야 하고,
+        # 값이 없다고 배포가 멈출 이유도 없다. 로컬은 http 라 .env 에서 false 로 덮는다.
+        secure: ${SESSION_COOKIE_SECURE:true}
+  # 인그레스 뒤에서 원래 프로토콜·호스트·IP 를 인식한다
+  forward-headers-strategy: framework
 
 app:
   frontend-origin: ${FRONTEND_ORIGIN}
