@@ -20,8 +20,9 @@ export default function AdminLoginPage() {
     try {
       await authApi.login(username, password);
       router.replace('/admin');
-    } catch {
-      setError('아이디 또는 비밀번호가 올바르지 않습니다.');
+    } catch (e) {
+      // 잠금 안내처럼 서버가 준 문구를 그대로 보여준다
+      setError(e instanceof Error ? e.message : '아이디 또는 비밀번호가 올바르지 않습니다.');
       setBusy(false);
     }
   };
