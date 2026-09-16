@@ -28,14 +28,27 @@ public class DataInitializer {
                                   AppProperties props) {
         return args -> {
             String username = props.getAdmin().getUsername();
-            if (adminRepository.findByUsername(username).isEmpty()) {
-                AdminUser admin = new AdminUser();
-                admin.setUsername(username);
-                admin.setPasswordHash(encoder.encode(props.getAdmin().getPassword()));
-                admin.setDisplayName("관리자");
-                adminRepository.save(admin);
+            String rawPassword = props.getAdmin().getPassword();
+
+            // 계정이 있으면 건너뛰던 것을 매번 비밀번호를 맞추도록 바꿨다.
+            // 이전에는 환경변수를 바꿔도 반영되지 않아, 비밀번호를 교체한 줄 알았는데
+            // 옛 비밀번호가 그대로 유효한 상태가 됐다.
+            AdminUser admin = adminRepository.findByUsername(username).orElseGet(() -> {
+                AdminUser created = new AdminUser();
+                created.setUsername(username);
+                created.setDisplayName("관리자");
                 log.info("관리자 계정 생성: {}", username);
+                return created;
+            });
+
+            if (admin.getPasswordHash() == null
+                    || !encoder.matches(rawPassword, admin.getPasswordHash())) {
+                admin.setPasswordHash(encoder.encode(rawPassword));
+                if (admin.getId() != null) {
+                    log.info("관리자 비밀번호를 환경변수 값으로 갱신: {}", username);
+                }
             }
+            adminRepository.save(admin);
 
             if (siteInfoRepository.findById(1L).isEmpty()) {
                 siteInfoRepository.save(new SiteInfo());
