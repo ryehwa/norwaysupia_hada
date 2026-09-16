@@ -18,13 +18,12 @@ public class ProjectPhoto {
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
-    /** 공개 URL (예: /uploads/2026/09/abc.jpg) */
-    @Column(nullable = false, length = 500)
-    private String url;
-
-    /** 저장소 상의 실제 경로 — 삭제 시 파일까지 지우기 위해 보관 */
-    @Column(length = 500)
-    private String storagePath;
+    /**
+     * MinIO 오브젝트 키 (예: 2026/09/abc.jpg).
+     * 조회용 URL 은 만료가 있어 저장하지 않고 응답할 때마다 새로 서명한다.
+     */
+    @Column(name = "object_key", nullable = false, length = 500)
+    private String objectKey;
 
     @Column(nullable = false)
     private int sortOrder;
@@ -37,10 +36,8 @@ public class ProjectPhoto {
     public void setId(Long v) { this.id = v; }
     public Project getProject() { return project; }
     public void setProject(Project v) { this.project = v; }
-    public String getUrl() { return url; }
-    public void setUrl(String v) { this.url = v; }
-    public String getStoragePath() { return storagePath; }
-    public void setStoragePath(String v) { this.storagePath = v; }
+    public String getObjectKey() { return objectKey; }
+    public void setObjectKey(String v) { this.objectKey = v; }
     public int getSortOrder() { return sortOrder; }
     public void setSortOrder(int v) { this.sortOrder = v; }
     public Instant getCreatedAt() { return createdAt; }

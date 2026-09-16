@@ -52,7 +52,16 @@ server:
 
 app:
   frontend-origin: ${FRONTEND_ORIGIN}
-  upload-dir: ${UPLOAD_DIR}
+  minio:
+    # endpoint 는 백엔드가 붙는 주소, public-endpoint 는 presigned URL 에 들어가
+    # 브라우저가 직접 닿는 주소. 클러스터 안팎 주소가 다르면 둘을 따로 준다.
+    endpoint: ${MINIO_ENDPOINT}
+    public-endpoint: ${MINIO_PUBLIC_ENDPOINT}
+    access-key: ${MINIO_ACCESS_KEY}
+    secret-key: ${MINIO_SECRET_KEY}
+    bucket: ${MINIO_BUCKET}
+    # 사진 URL 의 유효 기간. 페이지 캐시(revalidate 60초)보다 넉넉해야 한다.
+    url-expiry: 1h
   admin:
     username: ${ADMIN_USERNAME}
     password: ${ADMIN_PASSWORD}

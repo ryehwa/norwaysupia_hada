@@ -2,16 +2,55 @@ package com.hadasupia.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.time.Duration;
 import java.time.LocalTime;
 
 @ConfigurationProperties(prefix = "app")
 public class AppProperties {
 
     private String frontendOrigin = "http://localhost:3000";
-    private String uploadDir = "./uploads";
+    private Minio minio = new Minio();
     private Admin admin = new Admin();
     private Mail mail = new Mail();
     private Consult consult = new Consult();
+
+    /** 업로드된 사진을 보관하는 S3 호환 스토리지(MinIO) 설정 */
+    public static class Minio {
+        /** 백엔드가 붙는 주소. 클러스터 안에서는 내부 Service 주소를 쓴다. */
+        private String endpoint;
+        /**
+         * presigned URL 에 들어갈 주소 — 브라우저가 직접 닿을 수 있어야 한다.
+         * 서명에 호스트가 포함되므로 내부 주소로 서명하면 브라우저에서 실패한다.
+         */
+        private String publicEndpoint;
+        private String accessKey;
+        private String secretKey;
+        private String bucket;
+        /** MinIO 는 리전 개념이 없지만 SigV4 서명에는 값이 필요하다. */
+        private String region = "us-east-1";
+        /** presigned URL 유효 기간 */
+        private Duration urlExpiry = Duration.ofHours(1);
+
+        public String getEndpoint() { return endpoint; }
+        public void setEndpoint(String v) { this.endpoint = v; }
+        public String getPublicEndpoint() { return publicEndpoint; }
+        public void setPublicEndpoint(String v) { this.publicEndpoint = v; }
+        public String getAccessKey() { return accessKey; }
+        public void setAccessKey(String v) { this.accessKey = v; }
+        public String getSecretKey() { return secretKey; }
+        public void setSecretKey(String v) { this.secretKey = v; }
+        public String getBucket() { return bucket; }
+        public void setBucket(String v) { this.bucket = v; }
+        public String getRegion() { return region; }
+        public void setRegion(String v) { this.region = v; }
+        public Duration getUrlExpiry() { return urlExpiry; }
+        public void setUrlExpiry(Duration v) { this.urlExpiry = v; }
+
+        /** 브라우저용 주소가 따로 없으면 내부 주소를 그대로 쓴다. (로컬 개발) */
+        public String resolvedPublicEndpoint() {
+            return (publicEndpoint == null || publicEndpoint.isBlank()) ? endpoint : publicEndpoint;
+        }
+    }
 
     public static class Admin {
         private String username = "admin";
@@ -62,8 +101,8 @@ public class AppProperties {
 
     public String getFrontendOrigin() { return frontendOrigin; }
     public void setFrontendOrigin(String v) { this.frontendOrigin = v; }
-    public String getUploadDir() { return uploadDir; }
-    public void setUploadDir(String v) { this.uploadDir = v; }
+    public Minio getMinio() { return minio; }
+    public void setMinio(Minio v) { this.minio = v; }
     public Admin getAdmin() { return admin; }
     public void setAdmin(Admin v) { this.admin = v; }
     public Mail getMail() { return mail; }

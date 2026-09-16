@@ -6,15 +6,21 @@ import jakarta.validation.constraints.NotBlank;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 public final class ProjectDtos {
 
     private ProjectDtos() {}
 
+    /**
+     * 사진 URL 은 만료가 있는 presigned URL 이라 DB 에 없다.
+     * 오브젝트 키를 URL 로 바꾸는 함수(urlOf)를 받아 응답할 때마다 새로 만든다.
+     */
     public record PhotoView(Long id, String url, int sortOrder, boolean thumbnail) {
-        public static PhotoView of(ProjectPhoto photo, Long thumbnailId) {
+        public static PhotoView of(ProjectPhoto photo, Long thumbnailId, UnaryOperator<String> urlOf) {
             boolean isThumb = thumbnailId != null && thumbnailId.equals(photo.getId());
-            return new PhotoView(photo.getId(), photo.getUrl(), photo.getSortOrder(), isThumb);
+            return new PhotoView(photo.getId(), urlOf.apply(photo.getObjectKey()),
+                    photo.getSortOrder(), isThumb);
         }
     }
 
@@ -28,7 +34,7 @@ public final class ProjectDtos {
             List<PhotoView> photos,
             Instant createdAt
     ) {
-        public static ProjectView of(Project p) {
+        public static ProjectView of(Project p, UnaryOperator<String> urlOf) {
             ProjectPhoto thumb = p.thumbnail();
             Long thumbId = thumb == null ? null : thumb.getId();
             return new ProjectView(
@@ -36,9 +42,9 @@ public final class ProjectDtos {
                     p.getTitle(),
                     p.getCategory().getLabel(),
                     p.getDescription(),
-                    thumb == null ? null : thumb.getUrl(),
+                    thumb == null ? null : urlOf.apply(thumb.getObjectKey()),
                     p.getPhotos().size(),
-                    p.getPhotos().stream().map(ph -> PhotoView.of(ph, thumbId)).toList(),
+                    p.getPhotos().stream().map(ph -> PhotoView.of(ph, thumbId, urlOf)).toList(),
                     p.getCreatedAt()
             );
         }
@@ -48,11 +54,11 @@ public final class ProjectDtos {
     public record ProjectSummary(
             Long id, String title, String category, String thumbnailUrl, int photoCount
     ) {
-        public static ProjectSummary of(Project p) {
+        public static ProjectSummary of(Project p, UnaryOperator<String> urlOf) {
             ProjectPhoto thumb = p.thumbnail();
             return new ProjectSummary(
                     p.getId(), p.getTitle(), p.getCategory().getLabel(),
-                    thumb == null ? null : thumb.getUrl(), p.getPhotos().size()
+                    thumb == null ? null : urlOf.apply(thumb.getObjectKey()), p.getPhotos().size()
             );
         }
     }

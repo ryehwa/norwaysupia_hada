@@ -13,15 +13,31 @@ java {
 
 repositories { mavenCentral() }
 
+ext {
+    awsSdkVersion = '2.54.17'
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    // MinIO 는 S3 호환 API 로 다룬다. 동기 S3Client 만 쓰므로 무거운 기본
+    // HTTP 클라이언트(netty·apache)를 빼고 JDK 내장 커넥션을 쓴다.
+    implementation platform("software.amazon.awssdk:bom:${awsSdkVersion}")
+    implementation('software.amazon.awssdk:s3') {
+        exclude group: 'software.amazon.awssdk', module: 'netty-nio-client'
+        exclude group: 'software.amazon.awssdk', module: 'apache-client'
+    }
+    implementation 'software.amazon.awssdk:url-connection-client'
+
     runtimeOnly 'org.postgresql:postgresql'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    // Gradle 9 부터는 런처를 명시해야 JUnit Platform 이 올라온다.
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') { useJUnitPlatform() }
