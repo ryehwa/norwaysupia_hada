@@ -19,6 +19,13 @@ const field: React.CSSProperties = {
   color: theme.color.ink,
 };
 
+/**
+ * 아직 입력·선택하지 않은 칸의 글씨 색.
+ * 브라우저 기본 placeholder(크롬 #757575)는 차가운 회색이라 팔레트와 어긋난다.
+ * 폼 전체를 이 값으로 맞춘다 — globals.css 의 .contact-form ::placeholder 와 같은 값.
+ */
+const hint = '#a9a396';
+
 const labelStyle: React.CSSProperties = {
   display: 'block',
   fontFamily: theme.font.mono,
@@ -109,17 +116,18 @@ export default function ContactPage() {
     fontSize: 14,
     border: `1px solid ${sizeUnit === unit ? theme.color.ink : theme.color.lineStrong}`,
     background: sizeUnit === unit ? theme.color.ink : '#fff',
-    color: sizeUnit === unit ? '#fff' : theme.color.inkSoft,
+    color: sizeUnit === unit ? '#fff' : hint,
   });
 
   const pickerBox = (filled: boolean): React.CSSProperties => ({
     ...field,
     cursor: 'pointer',
-    color: filled ? theme.color.ink : '#a9a396',
+    color: filled ? theme.color.ink : hint,
   });
 
   return (
     <div
+      className="contact-form"
       style={{
         maxWidth: 1080,
         margin: '0 auto',
@@ -236,11 +244,18 @@ export default function ContactPage() {
               <select
                 value={spaceType}
                 onChange={(e) => setSpaceType(e.target.value)}
-                style={{ ...field, flex: 1, minWidth: 180 }}
+                style={{
+                  ...field,
+                  flex: 1,
+                  minWidth: 180,
+                  color: spaceType === '' ? hint : theme.color.ink,
+                }}
               >
-                <option value="">공간 유형 *</option>
+                <option value="" style={{ color: hint }}>
+                  공간 유형 *
+                </option>
                 {SPACE_TYPES.map((t) => (
-                  <option key={t} value={t}>
+                  <option key={t} value={t} style={{ color: theme.color.ink }}>
                     {t}
                   </option>
                 ))}

@@ -18,6 +18,16 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: #1a1a18
 
 button { border: none; background: none; cursor: pointer; color: inherit; }
 
+/*
+ * 문의 폼 — 입력 전 안내 문구.
+ * 지정하지 않으면 브라우저 기본값(크롬 #757575)이라 차가운 회색이 섞인다.
+ * 날짜 선택 칸·공간 유형·단위 칩이 쓰는 값(page.tsx 의 hint)과 같게 맞춘다.
+ */
+.contact-form ::placeholder {
+  color: #a9a396;
+  opacity: 1; /* 파이어폭스는 기본 투명도가 걸려 있다 */
+}
+
 /* 스크롤바가 얇은 가로 목록 (날짜 선택 등) */
 .thin-scroll::-webkit-scrollbar { height: 6px; }
 .thin-scroll::-webkit-scrollbar-thumb { background: #d8d3c9; }
