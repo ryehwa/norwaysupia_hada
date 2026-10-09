@@ -28,6 +28,20 @@ button { border: none; background: none; cursor: pointer; color: inherit; }
   opacity: 1; /* 파이어폭스는 기본 투명도가 걸려 있다 */
 }
 
+/*
+ * 숫자 입력칸(공간 크기)의 증감 화살표. 브라우저가 칸 안에 직접 그리기 때문에
+ * 옆의 입력칸들과 모양이 달라진다. 키보드로 입력받는 칸이라 화살표는 쓰지 않는다.
+ */
+.contact-form input[type='number']::-webkit-outer-spin-button,
+.contact-form input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.contact-form input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
 /* 스크롤바가 얇은 가로 목록 (날짜 선택 등) */
 .thin-scroll::-webkit-scrollbar { height: 6px; }
 .thin-scroll::-webkit-scrollbar-thumb { background: #d8d3c9; }

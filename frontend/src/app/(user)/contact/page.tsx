@@ -26,6 +26,29 @@ const field: React.CSSProperties = {
  */
 const hint = '#a9a396';
 
+/**
+ * select 는 끄지 않으면 OS 기본 위젯으로 그려진다 (사파리는 둥근 모서리·굵은 글씨·
+ * 위아래 화살표). 모양을 눌러 끄고 나머지 입력칸과 같은 테두리·여백·글꼴로 맞춘다.
+ * 화살표는 직접 그려 넣는다 — 끄고 나면 아무 표시도 남지 않기 때문이다.
+ */
+const chevron =
+  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%238a857a' stroke-width='1.2'/%3E%3C/svg%3E\")";
+
+const selectField: React.CSSProperties = {
+  ...field,
+  appearance: 'none',
+  WebkitAppearance: 'none',
+  MozAppearance: 'none',
+  borderRadius: 0,
+  fontFamily: theme.font.sansKr,
+  fontWeight: 400,
+  backgroundColor: '#fff',
+  backgroundImage: chevron,
+  backgroundRepeat: 'no-repeat',
+  backgroundPosition: 'right 16px center',
+  paddingRight: 38,
+};
+
 const labelStyle: React.CSSProperties = {
   display: 'block',
   fontFamily: theme.font.mono,
@@ -245,7 +268,7 @@ export default function ContactPage() {
                 value={spaceType}
                 onChange={(e) => setSpaceType(e.target.value)}
                 style={{
-                  ...field,
+                  ...selectField,
                   flex: 1,
                   minWidth: 180,
                   color: spaceType === '' ? hint : theme.color.ink,
