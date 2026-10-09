@@ -6,9 +6,11 @@ import FloatingContact from '@/components/user/FloatingContact';
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <SiteHeader />
-      <main>{children}</main>
-      <SiteFooter />
+      <div className="site-shell">
+        <SiteHeader />
+        <main>{children}</main>
+        <SiteFooter />
+      </div>
       <FloatingContact />
     </>
   );

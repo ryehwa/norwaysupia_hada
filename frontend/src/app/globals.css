@@ -42,6 +42,22 @@ button { border: none; background: none; cursor: pointer; color: inherit; }
   appearance: textfield;
 }
 
+/*
+ * 유저 사이트 골격 — 푸터를 화면 바닥에 붙인다.
+ * 콘텐츠가 뷰포트보다 짧으면(큰 화면의 시공사례 목록 등) 푸터가 중간에 멈추고
+ * 그 아래가 빈 채로 남는다. 본문이 남는 높이를 먹어 푸터를 끝까지 밀어낸다.
+ * dvh 는 모바일 주소창 높이 변화를 따라가고, 앞의 vh 는 미지원 브라우저용이다.
+ */
+.site-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+.site-shell > main {
+  flex: 1 0 auto;
+}
+
 /* 스크롤바가 얇은 가로 목록 (날짜 선택 등) */
 .thin-scroll::-webkit-scrollbar { height: 6px; }
 .thin-scroll::-webkit-scrollbar-thumb { background: #d8d3c9; }
